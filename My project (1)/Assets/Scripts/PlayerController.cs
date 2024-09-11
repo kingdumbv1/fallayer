@@ -47,9 +47,10 @@ public class PlayerController : MonoBehaviour
         temp.z = Input.GetAxisRaw("Horizontal") * speed;
         temp.x = Input.GetAxisRaw("Vertical") * speed;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Physics.Raycast(transform.position - Vector3.down, Vector3.down * 0.1f) && Input.GetKeyDown(KeyCode.Space))
             temp.y = jumpHeight;
 
         myRB.velocity = (transform.forward * temp.x) + (transform.right * temp.z) + (transform.up * temp.y);
+        
     }
 }
