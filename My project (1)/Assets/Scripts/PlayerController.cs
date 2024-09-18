@@ -8,8 +8,16 @@ public class PlayerController : MonoBehaviour
     Camera playercam;
     Vector2 camRotation;
 
+
+    [Header("Movement Stats")]
+    public bool sprinting = false;
+    public float groundDetection = 1.0f;
+    public float sprintMult = 1.5f;
     public float speed = 10f;
     public float jumpHeight = 5f;
+
+    [Header("User Settings")]
+    public bool sprintToggle = false;
     public float mousesensitivity = 2.0f;
     public float mousesensx = 2.0f;
     public float mousesensy = 2.0f;
@@ -44,10 +52,31 @@ public class PlayerController : MonoBehaviour
         playercam.transform.localRotation = Quaternion.AngleAxis(camRotation.y, Vector3.left);
         transform.localRotation = Quaternion.AngleAxis(camRotation.x, Vector3.up);
 
+        if (!sprinting)
+        {
+            if (!sprintToggle && Input.GetKey(KeyCode.LeftShift)) 
+                sprinting = true;
+
+            
+            if (sprintToggle && (Input.GetAxisRaw("Vertical") > 0) && Input.GetKey(KeyCode.LeftShift))
+                sprinting = true;
+
+        }
+      
+
         temp.z = Input.GetAxisRaw("Horizontal") * speed;
         temp.x = Input.GetAxisRaw("Vertical") * speed;
 
-        if (Physics.Raycast(transform.position - Vector3.down, Vector3.down * 0.1f) && Input.GetKeyDown(KeyCode.Space))
+        if (sprinting)
+            temp.z *= sprintMult;
+
+        if (sprinting && sprintToggle && (Input.GetAxisRaw("Vertical") <= 0))
+            sprinting = false;
+
+        if (sprinting && !sprintToggle && Input.GetKeyUp(KeyCode.LeftShift))
+            sprinting = false;
+    
+        if (Input.GetKeyDown(KeyCode.Space) && Physics.Raycast(transform.position, -transform.up, groundDetection))
             temp.y = jumpHeight;
 
         myRB.velocity = (transform.forward * temp.x) + (transform.right * temp.z) + (transform.up * temp.y);

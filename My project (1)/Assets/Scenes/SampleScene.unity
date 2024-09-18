@@ -326,8 +326,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09b0ded6e75da444c8200fd8769ca518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sprinting: 0
+  groundDetection: 1
+  sprintMult: 1.5
   speed: 10
   jumpHeight: 5
+  sprintToggle: 0
   mousesensitivity: 2
   mousesensx: 2
   mousesensy: 2
