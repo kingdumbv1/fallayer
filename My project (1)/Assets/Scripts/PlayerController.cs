@@ -16,6 +16,15 @@ public class PlayerController : MonoBehaviour
     public float speed = 10f;
     public float jumpHeight = 5f;
 
+    [Header("WeaponStats")]
+    public Transform weaponSlot;
+
+
+    [Header("Player Stats")]
+    public int health = 5;
+    public int maxHealth = 10;
+    public int healthPickupAmount;
+
     [Header("User Settings")]
     public bool sprintToggle = false;
     public float mousesensitivity = 2.0f;
@@ -26,7 +35,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        camRotation = Vector2.zero;
+        camRotation = Vector2.zero; 
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Confined;
@@ -81,5 +90,28 @@ public class PlayerController : MonoBehaviour
 
         myRB.velocity = (transform.forward * temp.x) + (transform.right * temp.z) + (transform.up * temp.y);
         
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if((collision.gameObject.tag == "HealthPickup") && health < maxHealth)
+        {
+            if (health + healthPickupAmount > maxHealth)
+                health = maxHealth;
+            else
+                health += healthPickupAmount;
+
+            Destroy(collision.gameObject);
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Weapon")
+        {
+            other.transform.position = weaponSlot.position;
+            other.transform.rotation = weaponSlot.rotation;
+
+            
+            other.transform.SetParent(weaponSlot);
+        }
     }
 }
