@@ -10,15 +10,27 @@ public class PlayerController : MonoBehaviour
 
 
     [Header("Movement Stats")]
+    // accessmodifier "public", datatype "bool", name "sprinting"
     public bool sprinting = false;
     public float groundDetection = 1.0f;
-    public float sprintMult = 1.5f;
+    public float sprintMult = 2.0f;
     public float speed = 10f;
     public float jumpHeight = 5f;
 
     [Header("WeaponStats")]
     public Transform weaponSlot;
-
+    public GameObject shot;
+    public float shotVel = 0;
+    public int weaponID = -1;
+    public int fireMode = 0;
+    public float fireRate = 0;
+    public float currentClip = 0;
+    public float clipSize = 0;
+    public float maxAmmo = 0;
+    public float currentAmmo = 0;
+    public float reloadAmt = 0;
+    public float bulletLifeSpan = 0;
+    public bool canFire = true;
 
     [Header("Player Stats")]
     public int health = 5;
@@ -61,6 +73,17 @@ public class PlayerController : MonoBehaviour
         playercam.transform.localRotation = Quaternion.AngleAxis(camRotation.y, Vector3.left);
         transform.localRotation = Quaternion.AngleAxis(camRotation.x, Vector3.up);
 
+        if (Input.GetMouseButton(0) && canFire && currentClip > 0 && weaponID >= 0)
+        {
+            GameObject s = Instantiate(shot, weaponSlot.position, weaponSlot.rotation);
+            s.GetComponent<Rigidbody>().AddForce(playercam.transform.forward * shotVel);
+            Destroy(s, bulletLifeSpan);
+
+            canFire = false;
+            currentClip--;
+            StartCoroutine("cooldown");
+        }
+
         if (!sprinting)
         {
             if (!sprintToggle && Input.GetKey(KeyCode.LeftShift)) 
@@ -69,7 +92,6 @@ public class PlayerController : MonoBehaviour
             
             if (sprintToggle && (Input.GetAxisRaw("Vertical") > 0) && Input.GetKey(KeyCode.LeftShift))
                 sprinting = true;
-
         }
       
 
@@ -77,6 +99,7 @@ public class PlayerController : MonoBehaviour
         temp.x = Input.GetAxisRaw("Vertical") * speed;
 
         if (sprinting)
+            temp.x *= sprintMult;
             temp.z *= sprintMult;
 
         if (sprinting && sprintToggle && (Input.GetAxisRaw("Vertical") <= 0))
@@ -102,16 +125,68 @@ public class PlayerController : MonoBehaviour
 
             Destroy(collision.gameObject);
         }
+        if((collision.gameObject.tag == "ammoPickup") && currentAmmo < maxAmmo)
+        {
+            if (currentAmmo + reloadAmt > maxAmmo)
+                currentAmmo = maxAmmo;
+            else
+                currentAmmo += reloadAmt;
+
+            Destroy(collision.gameObject);
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag == "Weapon")
         {
-            other.transform.position = weaponSlot.position;
-            other.transform.rotation = weaponSlot.rotation;
-
-            
             other.transform.SetParent(weaponSlot);
+            other.transform.SetPositionAndRotation(weaponSlot.position, weaponSlot.rotation);
+            switch(other.gameObject.name)
+            {
+                case "Weapon1":
+                    weaponID = 0;
+                    shotVel = 10000;
+                    fireMode = 0;
+                    fireRate = 0.1f;
+                    currentClip = 20;
+                    clipSize = 20;
+                    maxAmmo = 400;
+                    currentAmmo = 200;
+                    reloadAmt = 20;
+                    bulletLifeSpan = 0.5f;
+                    break;
+
+                default:
+                    break;
+            }
         }
+    }
+
+    public void reloadClip()
+    {
+        if (currentClip >= clipSize)
+            return;
+        else
+        {
+            float reloadCount = clipSize - currentClip;
+            if (currentAmmo < reloadCount)
+            {
+                currentClip += currentAmmo;
+                currentAmmo = 0;
+                return;
+            }
+            else
+            {
+                currentClip += reloadCount;
+                currentAmmo -= reloadCount;
+                return;
+            }
+        }
+    }
+
+    IEnumerator cooldown()
+    {
+        yield return new WaitForSeconds(fireRate);
+        canFire = true;
     }
 }
