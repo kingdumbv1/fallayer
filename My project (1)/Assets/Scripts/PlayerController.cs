@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Stats")]
     // accessmodifier "public", datatype "bool", name "sprinting"
     public bool sprinting = false;
-    public float groundDetection = 1.0f;
+    public float groundDetection = 1.5f;
     public float sprintMult = 2.0f;
     public float speed = 10f;
     public float jumpHeight = 5f;
