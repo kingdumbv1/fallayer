@@ -140,7 +140,7 @@ public class PlayerController : MonoBehaviour
         if(other.gameObject.tag == "Weapon")
         {
             other.transform.SetParent(weaponSlot);
-            other.transform.SetPositionAndRotation(weaponSlot.position, weaponSlot.rotation);
+            other.transform.SetPositionAndRotation(weaponSlot.position, weaponSlot.rotation); a
             switch(other.gameObject.name)
             {
                 case "Weapon1":
