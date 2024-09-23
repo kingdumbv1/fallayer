@@ -75,13 +75,14 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButton(0) && canFire && currentClip > 0 && weaponID >= 0)
         {
-            GameObject s = Instantiate(shot, weaponSlot.position, weaponSlot.rotation);
-            s.GetComponent<Rigidbody>().AddForce(playercam.transform.forward * shotVel);
-            Destroy(s, bulletLifeSpan);
-
-            canFire = false;
-            currentClip--;
-            StartCoroutine("cooldown");
+            if (weaponID == 0)
+            {
+                Fire(6);
+            }
+            else
+            {
+                Fire(1);
+            }
         }
 
         if (!sprinting)
@@ -140,14 +141,14 @@ public class PlayerController : MonoBehaviour
         if(other.gameObject.tag == "Weapon")
         {
             other.transform.SetParent(weaponSlot);
-            other.transform.SetPositionAndRotation(weaponSlot.position, weaponSlot.rotation); a
+            other.transform.SetPositionAndRotation(weaponSlot.position, weaponSlot.rotation); 
             switch(other.gameObject.name)
             {
                 case "Weapon1":
                     weaponID = 0;
                     shotVel = 10000;
                     fireMode = 0;
-                    fireRate = 0.1f;
+                    fireRate = 2f;
                     currentClip = 20;
                     clipSize = 20;
                     maxAmmo = 400;
@@ -188,5 +189,21 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(fireRate);
         canFire = true;
+    }
+
+    void Fire(int bullets = 1)
+    {
+        for (int i = 0; i < bullets; i++)
+        {
+            GameObject s = Instantiate(shot, weaponSlot.position, weaponSlot.rotation);
+            s.transform.localRotation = playercam.transform.rotation;
+            s.transform.localRotation = Quaternion.Euler(Random.Range(-5f, 5f) + s.transform.localRotation.eulerAngles.x, Random.Range(-5f, 5f) + s.transform.localRotation.eulerAngles.y, s.transform.localRotation.eulerAngles.z);
+            s.GetComponent<Rigidbody>().AddForce(s.transform.forward * shotVel);
+            Destroy(s, bulletLifeSpan);
+        }
+
+        canFire = false;
+        currentClip--;
+        StartCoroutine("cooldown");
     }
 }
