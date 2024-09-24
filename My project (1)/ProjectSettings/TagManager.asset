@@ -7,6 +7,7 @@ TagManager:
   - HealthPickup
   - Weapon
   - Bullet
+  - Frisker
   layers:
   - Default
   - TransparentFX
