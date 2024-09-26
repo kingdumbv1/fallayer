@@ -20,7 +20,7 @@ public class BasicEnemyController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject.Find("Player").GetComponent<PlayerController>();
+        player = GameObject.Find("Player").GetComponent<PlayerController>();
         agent = GetComponent<NavMeshAgent>();
     }
 

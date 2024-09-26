@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody myRB;
     Camera playercam;
     Vector2 camRotation;
-
+    Transform cameraHolder;
 
     [Header("Movement Stats")]
     // accessmodifier "public", datatype "bool", name "sprinting"
@@ -56,7 +56,9 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
 
         myRB = GetComponent<Rigidbody>();
-        playercam = transform.GetChild(0).GetComponent<Camera>();
+        playercam = Camera.main;
+
+        cameraHolder = transform.GetChild(0);
     }
 
     // Update is called once per frame
@@ -81,7 +83,8 @@ public class PlayerController : MonoBehaviour
         camRotation.y += Input.GetAxisRaw("Mouse Y") * mousesensy;
 
         camRotation.y = Mathf.Clamp(camRotation.y, -90, 90);
-        playercam.transform.localRotation = Quaternion.AngleAxis(camRotation.y, Vector3.left);
+        playercam.transform.position = cameraHolder.position;
+        playercam.transform.rotation = Quaternion.Euler(-camRotation.y, camRotation.x, 0);
         transform.localRotation = Quaternion.AngleAxis(camRotation.x, Vector3.up);
 
         if (Input.GetMouseButton(0) && canFire && currentClip > 0 && weaponID >= 0)
