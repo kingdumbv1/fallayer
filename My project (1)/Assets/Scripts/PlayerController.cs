@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    GameManager gm;
     Rigidbody myRB;
     Camera playercam;
     Vector2 camRotation;
@@ -18,7 +19,7 @@ public class PlayerController : MonoBehaviour
     public float speed = 10f;
     public float jumpHeight = 5f;
 
-    [Header("WeaponStats")]
+    [Header("Weapon Stats")]
     public Transform weaponSlot;
     public GameObject shot;
     public float shotVel = 0;
@@ -50,8 +51,9 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        camRotation = Vector2.zero; 
+        camRotation = Vector2.zero;
 
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Confined;
 
@@ -64,14 +66,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!gm.isPaused)
         if(health <= 0)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
-        if (takenDamage)
-        {
-
-        }
+        
         Vector3 temp = myRB.velocity;
 
         Quaternion mouseLook = playercam.transform.rotation;
@@ -208,7 +208,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator cooldownDamage()
     {
         yield return new WaitForSeconds(damageCooldownTimer);
-        takenDamage = true;
+        takenDamage = false;
     }
 
     void Fire(int bullets = 1)

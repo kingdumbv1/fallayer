@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public bool isPaused = false;
+
     public GameObject pauseMenu;
     public PlayerController playerData;
 
     public Image healthBar;
-    public TextMesh clipCounter;
-    public TextMesh ammoCounter;
+    public TextMeshProUGUI clipCounter;
+    public TextMeshProUGUI ammoCounter;
 
     // Start is called before the first frame update
     void Start()
@@ -24,7 +26,8 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        healthBar.fillAmount = playerData.health / playerData.maxHealth;
+        healthBar.fillAmount = Mathf.Clamp(((float)playerData.health / (float)playerData.maxHealth), 0, 1);
+
         if (playerData.weaponID < 0)
         {
             clipCounter.gameObject.SetActive(false);
@@ -50,15 +53,12 @@ public class GameManager : MonoBehaviour
 
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-
-            Camera.main.lock
         }
 
         else if (isPaused && Input.GetKeyDown(KeyCode.Escape))
-        {
             Resume();
-        }
     }
+
     public void Resume()
     {
         isPaused = false;
@@ -70,14 +70,18 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
     }
+
     public void QuitGame()
     {
         Application.Quit();
     }
+
     public void RestartLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale = 1;
     }
+
     public void LoadLevel(int sceneID)
     {
         SceneManager.LoadScene(sceneID);
