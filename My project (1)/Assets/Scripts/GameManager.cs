@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public bool isPaused = false;
 
     public GameObject pauseMenu;
+    public GameObject UI;
     public PlayerController playerData;
 
     public Image healthBar;
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         playerData = GameObject.Find("Player").GetComponent<PlayerController>();
-
+        UI = GameObject.Find("UI");
     }
 
     // Update is called once per frame
@@ -47,12 +48,17 @@ public class GameManager : MonoBehaviour
         {
             isPaused = true;
 
+            UI.SetActive(false);
             pauseMenu.SetActive(true);
 
             Time.timeScale = 0;
 
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            
+            playerData.mousesensitivity = 0;
+            playerData.mousesensx = 0;
+            playerData.mousesensy = 0;
         }
 
         else if (isPaused && Input.GetKeyDown(KeyCode.Escape))
@@ -64,11 +70,15 @@ public class GameManager : MonoBehaviour
         isPaused = false;
 
         pauseMenu.SetActive(false);
+        UI.SetActive(true);
 
         Time.timeScale = 1;
 
-        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        playerData.mousesensitivity = 2;
+        playerData.mousesensx = 2;
+        playerData.mousesensy = 2;
     }
 
     public void QuitGame()

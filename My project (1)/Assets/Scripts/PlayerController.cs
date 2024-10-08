@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     public int weaponID = -1;
     public int fireMode = 0;
     public float fireRate = 0;
+    public int damage = 0;
     public float currentClip = 0;
     public float clipSize = 0;
     public float maxAmmo = 0;
@@ -37,9 +38,10 @@ public class PlayerController : MonoBehaviour
     [Header("Player Stats")]
     public float damageCooldownTimer = .5f;
     public bool takenDamage = false;
-    public int health = 5;
-    public int maxHealth = 10;
+    public int health = 50;
+    public int maxHealth = 100;
     public int healthPickupAmount;
+    public float invulnerability = 0;
 
     [Header("User Settings")]
     public bool sprintToggle = false;
@@ -127,7 +129,7 @@ public class PlayerController : MonoBehaviour
             temp.y = jumpHeight;
 
         myRB.velocity = (transform.forward * temp.x) + (transform.right * temp.z) + (transform.up * temp.y);
-        
+        invulnerability -= Time.deltaTime;
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -149,6 +151,14 @@ public class PlayerController : MonoBehaviour
 
             Destroy(collision.gameObject);
         }
+        if(collision.gameObject.tag == "Frisker")
+        {
+            if (invulnerability <= 0)
+            {
+                health -= 5;
+                invulnerability = 0.5f;
+            }
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -163,6 +173,7 @@ public class PlayerController : MonoBehaviour
                     shotVel = 10000;
                     fireMode = 0;
                     fireRate = 2f;
+                    damage = 1;
                     currentClip = 20;
                     clipSize = 20;
                     maxAmmo = 400;

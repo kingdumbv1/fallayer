@@ -27,7 +27,6 @@ public class BasicEnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
         target = player.transform;
         agent.destination = target.position;
         if (health <= 0)
@@ -35,9 +34,13 @@ public class BasicEnemyController : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "bullet")
+        if (collision.gameObject.tag == "Bullet")
         {
-            health -= damageReceived;
+            health -= player.damage;
+            
+        }
+        if (health <= 0)
+        {
             Destroy(collision.gameObject);
         }
         if (collision.gameObject.tag == "player")
