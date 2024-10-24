@@ -8,6 +8,7 @@ TagManager:
   - Weapon
   - Bullet
   - Frisker
+  - Tile
   layers:
   - Default
   - TransparentFX
